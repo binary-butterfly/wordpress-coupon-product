@@ -9,7 +9,7 @@ WC tested up to: 3.9.1
 Author: binary butterfly GmbH
 Author URI: https://binary-butterfly.de
 Text Domain: coupon-product
-License: GPLv2 or later
+License: MIT
 Domain Path: /languages
 */
 
