@@ -1,5 +1,7 @@
 <?php
 
+defined('ABSPATH') or die('No script kiddies please!');
+
 class WC_Product_Coupon_Product extends WC_Product_Simple {
 
     public function __construct( $product ) {

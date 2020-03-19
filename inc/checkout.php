@@ -1,5 +1,7 @@
 <?php
 
+defined('ABSPATH') or die('No script kiddies please!');
+
 /*
  * generate coupon after completing order
  */
@@ -50,8 +52,10 @@ add_action( 'woocommerce_order_status_completed', function ($order_id, $order) {
 /*
  * show coupons before mail table
  */
-add_action('woocommerce_email_before_order_table', function ($order, $sent_to_admin) {
+add_action('woocommerce_email_before_order_table', function ($order, $sent_to_admin, $plain_text, $email) {
     if ($sent_to_admin)
+        return;
+    if ($email->id !== 'customer_completed_order')
         return;
     $order_items =  $order->get_items();
     $codes = array();
@@ -71,7 +75,7 @@ add_action('woocommerce_email_before_order_table', function ($order, $sent_to_ad
     </ul>
     <p>Du kannst die Gutscheincodes später hier im Online-Shop oder vor Ort einlösen.</p>
     <?php
-}, 10, 2);
+}, 10, 4);
 
 
 /*
