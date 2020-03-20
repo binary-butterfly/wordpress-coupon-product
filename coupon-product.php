@@ -3,7 +3,7 @@
 Plugin Name: Coupon Product for WooCommerce
 Plugin URI: https://github.com/binary-butterfly/wordpress-coupon-product
 Description: Fügt ein Produkt hinzu, was in ein Coupon umgewandelt wird.
-Version: 0.1.2
+Version: 0.1.3
 WC requires at least: 3.0.0
 WC tested up to: 4.0.1
 Author: binary butterfly GmbH
