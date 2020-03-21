@@ -2,6 +2,8 @@
 
 defined('ABSPATH') or die('No script kiddies please!');
 
+require 'qrcode.php';
+
 /*
  * generate coupon after completing order
  */
@@ -17,6 +19,7 @@ add_action( 'woocommerce_order_status_completed', function ($order_id, $order) {
             continue;
 
         $coupon_code = strtolower( 'cp-' . wp_generate_password( 15, false ));
+        $token = wp_generate_password(16, false);
 
         $new_coupon_id = wp_insert_post(array(
             'post_title'   => $coupon_code,
@@ -36,7 +39,8 @@ add_action( 'woocommerce_order_status_completed', function ($order_id, $order) {
             'usage_count' => '0',
             'free_shipping' => 'no',
             'exclude_sale_items' => 'no',
-            'is_voucher' => 'yes'
+            'is_voucher' => 'yes',
+            'token' => $token
         );
 
         foreach ( $coupon_meta as $meta_key => $meta_value ) {
@@ -45,6 +49,7 @@ add_action( 'woocommerce_order_status_completed', function ($order_id, $order) {
 
         wc_add_order_item_meta( $order_item_id, '_coupon_id', $new_coupon_id, true );
         wc_add_order_item_meta( $order_item_id, '_coupon_code', $coupon_code, true );
+        wc_add_order_item_meta( $order_item_id, '_coupon_token', $token, true );
     }
 }, 1, 2);
 
@@ -62,18 +67,38 @@ add_action('woocommerce_email_before_order_table', function ($order, $sent_to_ad
     foreach( $order_items as $order_item_id => $order_item ) {
         if ($order_item->get_product()->get_type() !== 'coupon_product')
             continue;
-        $codes[] = wc_get_order_item_meta($order_item_id, '_coupon_code', true);
+        $codes[] = array(
+            wc_get_order_item_meta($order_item_id, '_coupon_code', true),
+            wc_get_order_item_meta($order_item_id, '_coupon_token', true)
+        );
     }
     if (!count($codes))
         return;
+
+    if (count($codes) === 1):
+    ?>
+    <p>Du hast in Deiner E-Mail Gutscheine gekauft. Danke! Hier ist dein Gutscheincode:</p>
+    <?php echo($codes[0][0]); ?><br>
+    <img src="<?php echo generate_coupon_qr_code_image_src($codes[0][0], $codes[0][1]); ?>">
+    <?php
+    else:
     ?>
     <p>Du hast in Deiner E-Mail Gutscheine gekauft. Danke! Hier sind die Gutscheincodes dazu:</p>
     <ul>
         <?php foreach ($codes as $code): ?>
-        <li><?php echo($code); ?></li>
+        <li>
+            <?php echo($code[0]); ?><br>
+            <img src="<?php echo generate_coupon_qr_code_image_src($code[0], $code[1]); ?>">
+        </li>
         <?php endforeach; ?>
     </ul>
-    <p>Du kannst die Gutscheincodes später hier im Online-Shop oder vor Ort einlösen.</p>
+    <?php
+    endif;
+    ?>
+    <p>
+        Du kannst die Gutscheincodes später hier im Online-Shop oder vor Ort einlösen. Wenn Du den Gutschein im Geschäft
+        einösen willst, bringe bitte den QR-Code mit.
+    </p>
     <?php
 }, 10, 4);
 

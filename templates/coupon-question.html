@@ -1,0 +1,9 @@
+<?php include COUPON_PRODUCT_PLUGIN_DIR . 'templates/coupon-header.html'; ?>
+<div>
+    <form method="POST" action="<?php echo(get_site_url() . '/coupon-product/1.0/check?code=' . $_GET['code'] . '&token=' . $_GET['token']); ?>">
+        <p>Gutschein einlösen?</p>
+        <p><input type="submit" value="einlösen"></p>
+        <p><a href="/">abbrechen</a></p>
+    </form>
+    <?php include COUPON_PRODUCT_PLUGIN_DIR . 'templates/coupon-footer.html'; ?>
+</div>
